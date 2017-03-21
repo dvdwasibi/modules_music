@@ -36,6 +36,9 @@ class Playlist {
   /// Tracks of this playlist
   final List<Track> tracks;
 
+  /// Date that this playlist was created at
+  DateTime createdAt;
+
   /// Constructor
   Playlist({
     this.title,
@@ -47,6 +50,7 @@ class Playlist {
     this.artworkUrl,
     this.user,
     this.tracks,
+    this.createdAt,
   });
 
   /// Create a new playlist from JSON data
@@ -63,6 +67,9 @@ class Playlist {
       tracks: json['tracks']
           ?.map((dynamic trackJson) => new Track.fromJson(trackJson))
           ?.toList(),
+      createdAt: json['created_at'] != null && json['created_at'] is String
+          ? DateTime.parse(json['created_at'].replaceAll('/', '-'))
+          : null,
     );
   }
 }
