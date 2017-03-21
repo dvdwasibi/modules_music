@@ -31,7 +31,32 @@ class PlaylistSurface extends StatelessWidget {
         // TODO(dayang@): Get actual duration text
         new Text('Duration'),
         // TODO(dayang@): Get actual stuff here
-        new Text('6 days ago'),
+        new Text('${playlist.createdAt.year}'),
+      ],
+    );
+  }
+
+  Widget _buildPlayListMetrics() {
+    return new Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        new Text('Tracks'),
+        // TODO(dayang@): Formatting
+        new Text('${playlist.trackCount}'),
+      ],
+    );
+  }
+
+  Widget _buildPlayListAttribution() {
+    return new Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        // TODO(dayang@): Formatting
+        new Text('Created by ${playlist.user.username}'),
+        new RaisedButton(
+          child: new Text('Following'),
+          onPressed: () => {},
+        ),
       ],
     );
   }
@@ -45,7 +70,7 @@ class PlaylistSurface extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             new Text(playlist.title),
-            new Text('6 days ago'),
+            _buildPlaylistDetails(),
           ],
         ),
       ),
@@ -54,11 +79,8 @@ class PlaylistSurface extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.end,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            new Text('Created by ${playlist.user.username}'),
-            new RaisedButton(
-              child: new Text('Following'),
-              onPressed: () => {},
-            ),
+            _buildPlayListAttribution(),
+            _buildPlayListMetrics(),
           ],
         ),
       ),
@@ -82,7 +104,9 @@ class PlaylistSurface extends StatelessWidget {
     ThemeData theme = Theme.of(context);
     return new Container(
       child: new Stack(
-        children: <Widget>[],
+        children: <Widget>[
+          _buildHeader(theme.primaryColor),
+        ],
       ),
     );
   }
