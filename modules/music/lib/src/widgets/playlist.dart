@@ -12,7 +12,6 @@ const double _kBackgroundBannerHeight = 100.0;
 const double _kBannerInnerContentHeight = 50.0;
 
 class PlaylistSurface extends StatelessWidget {
-
   /// The [Playlist] to represent for this [PlaylistSurface]
   final Playlist playlist;
 
@@ -20,39 +19,50 @@ class PlaylistSurface extends StatelessWidget {
   PlaylistSurface({
     Key key,
     @required this.playlist,
-  }) : super(key: key) {
-    assert(playlist!=null);
+  })
+      : super(key: key) {
+    assert(playlist != null);
+  }
+
+  Widget _buildPlaylistDetails() {
+    return new Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        // TODO(dayang@): Get actual duration text
+        new Text('Duration'),
+        // TODO(dayang@): Get actual stuff here
+        new Text('6 days ago'),
+      ],
+    );
   }
 
   Widget _buildHeaderContent() {
-    return new Column(
-      children: <Widget>[
-        new Text(playlist.playlistType),
-        new Expanded(
-          child: new Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              new Text(playlist.title),
-              new Text('6 days ago'),
-            ],
-          ),
+    return new Column(children: <Widget>[
+      new Text(playlist.playlistType),
+      new Expanded(
+        child: new Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            new Text(playlist.title),
+            new Text('6 days ago'),
+          ],
         ),
-        new Expanded(
-          child: new Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              new Text('Created by ${playlist.user.username}'),
-              new RaisedButton(
-                child: new Text('Following'),
-                onPressed: ()=>{},
-              ),
-            ],
-          ),
+      ),
+      new Expanded(
+        child: new Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            new Text('Created by ${playlist.user.username}'),
+            new RaisedButton(
+              child: new Text('Following'),
+              onPressed: () => {},
+            ),
+          ],
         ),
-      ]
-    );
+      ),
+    ]);
   }
 
   Widget _buildHeader(Color primaryColor) {
@@ -72,9 +82,7 @@ class PlaylistSurface extends StatelessWidget {
     ThemeData theme = Theme.of(context);
     return new Container(
       child: new Stack(
-        children: <Widget>[
-
-        ],
+        children: <Widget>[],
       ),
     );
   }
