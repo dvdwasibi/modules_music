@@ -6,10 +6,16 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 import '../models/playlist.dart';
+import '../utils.dart';
 
 const double _kTopPadding = 36.0;
-const double _kBackgroundBannerHeight = 100.0;
-const double _kBannerInnerContentHeight = 50.0;
+const double _kBackgroundBannerHeight = 175.0;
+const double _kBannerInnerContentHeight = 120.0;
+const double _kPlaylistDetailSectionHeight = 60.0;
+const TextStyle _kHeaderTextStyle = const TextStyle(
+  color: Colors.white,
+  height: 1.5,
+);
 
 class PlaylistSurface extends StatelessWidget {
   /// The [Playlist] to represent for this [PlaylistSurface]
@@ -24,67 +30,104 @@ class PlaylistSurface extends StatelessWidget {
     assert(playlist != null);
   }
 
+
+  Widget _buildHeaderSection({Widget child}) {
+    return new Container(
+      height: _kPlaylistDetailSectionHeight,
+      child: child,
+    );
+  }
+
   Widget _buildPlaylistDetails() {
-    return new Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        // TODO(dayang@): Get actual duration text
-        new Text('Duration'),
-        // TODO(dayang@): Get actual stuff here
-        new Text('${playlist.createdAt.year}'),
-      ],
+    return _buildHeaderSection(
+      child: new Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          new Text(new DurationFormat(playlist.duration).totalText , style: _kHeaderTextStyle),
+          new Text('${playlist.createdAt.year}' , style: _kHeaderTextStyle),
+        ],
+      ),
     );
   }
 
   Widget _buildPlayListMetrics() {
-    return new Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        new Text('Tracks'),
-        // TODO(dayang@): Formatting
-        new Text('${playlist.trackCount}'),
-      ],
+    return _buildHeaderSection(
+      child: new Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          new Text('Tracks', style: _kHeaderTextStyle),
+          new Text('${playlist.trackCount}', style: _kHeaderTextStyle),
+        ],
+      ),
     );
   }
 
   Widget _buildPlayListAttribution() {
-    return new Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        // TODO(dayang@): Formatting
-        new Text('Created by ${playlist.user.username}'),
-        new RaisedButton(
-          child: new Text('Following'),
-          onPressed: () => {},
-        ),
-      ],
+    return _buildHeaderSection(
+      child: new Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          // TODO(dayang@): Formatting
+          new Text('Created by ${playlist.user.username}'),
+          new RaisedButton(
+            child: new Text('Following'),
+            onPressed: () => {},
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildHeaderContent() {
-    return new Column(children: <Widget>[
-      new Text(playlist.playlistType),
-      new Expanded(
-        child: new Row(
+    return new Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        new Text(
+          playlist.playlistType.toUpperCase(),
+          style: new TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w300,
+          ),
+        ),
+        new Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            new Text(playlist.title),
-            _buildPlaylistDetails(),
+            new Expanded(
+              child: _buildHeaderSection(
+                child: new Text(
+                  playlist.title,
+                  style: new TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 32.0,
+                  ),
+                ),
+              ),
+            ),
+            new Expanded(
+              child: _buildHeaderSection(
+                child: _buildPlaylistDetails()
+              ),
+            )
           ],
         ),
-      ),
-      new Expanded(
-        child: new Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
+        new Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            _buildPlayListAttribution(),
-            _buildPlayListMetrics(),
+            new Expanded(
+              child: _buildPlayListAttribution(),
+            ),
+            new Expanded(
+              child: _buildPlayListMetrics(),
+            ),
           ],
         ),
-      ),
-    ]);
+      ],
+    );
   }
 
   Widget _buildHeader(Color primaryColor) {
