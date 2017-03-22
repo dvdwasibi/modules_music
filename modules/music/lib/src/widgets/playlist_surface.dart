@@ -6,7 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 import 'track_art.dart';
+import 'track_list_item.dart';
 import '../models/playlist.dart';
+import '../models/track.dart';
 import '../utils.dart';
 
 /// This is the height that the header (playlist name...) should take up
@@ -30,7 +32,7 @@ const double _kHeaderHorizontalPadding = 50.0;
 
 /// The maximum width of the main content section below the header. This
 /// contains the actual list of songs.
-const double _kMainContentMaxWidth = 900.0;
+const double _kMainContentMaxWidth = 1000.0;
 
 /// UI Widget that represents a playlist surface
 class PlaylistSurface extends StatelessWidget {
@@ -50,6 +52,12 @@ class PlaylistSurface extends StatelessWidget {
   /// True if the authenticated user is following this playlist
   final bool isFollowing;
 
+  /// The track that is currently playing
+  final Track currentPlayingTrack;
+
+  /// Callback for when a track is tapped
+  final ValueChanged<Track> onTapTrack;
+
   /// Constructor
   PlaylistSurface({
     Key key,
@@ -57,6 +65,7 @@ class PlaylistSurface extends StatelessWidget {
     this.highlightColor,
     this.onToggleFollow,
     this.isFollowing: false,
+    this.currentPlayingTrack,
   })
       : super(key: key) {
     assert(playlist != null);
@@ -168,7 +177,32 @@ class PlaylistSurface extends StatelessWidget {
     );
   }
 
-  Widget _buildListSection() {
+  Widget _buildListSection(Color highlightColor) {
+    List<Widget> listChildren = playlist.tracks.map((Track track) =>
+    new Container(
+      padding: const EdgeInsets.symmetric(horizontal: 32.0),
+      child: new TrackListItem(
+        track: track,
+        highlightColor: highlightColor,
+        isPlaying: currentPlayingTrack == track,
+        onTap: () => onTapTrack?.call(track),
+        showUser: playlist.playlistType != 'album',
+      ),
+    )).toList();
+
+    // Add initial "empty spacer"
+    listChildren.insert(
+      0,
+      new Container(
+        height: 96.0,
+        decoration: new BoxDecoration(
+          border: new Border(bottom: new BorderSide(
+            color: Colors.grey[300],
+          )),
+        ),
+      ),
+    );
+
     return new Container(
       margin: const EdgeInsets.only(top: _kHeaderHeight),
       alignment: FractionalOffset.topCenter,
@@ -176,15 +210,14 @@ class PlaylistSurface extends StatelessWidget {
         elevation: 4,
         type: MaterialType.card,
         color: Colors.white,
-        child: new Column(
-          children: <Widget>[
-            new Container(
-              height: 500.0,
-              constraints: new BoxConstraints(
-                maxWidth: _kMainContentMaxWidth,
-              ),
-            ),
-          ],
+        child: new Container(
+          constraints: new BoxConstraints(
+            maxWidth: _kMainContentMaxWidth,
+          ),
+          child: new Column(
+            mainAxisSize: MainAxisSize.min,
+            children: listChildren
+          ),
         ),
       ),
     );
@@ -228,7 +261,7 @@ class PlaylistSurface extends StatelessWidget {
             right: 0.0,
             child: _buildHeader(highlightColor ?? theme.primaryColor),
           ),
-          _buildListSection(),
+          _buildListSection(highlightColor ?? theme.primaryColor),
           _buildArtwork(),
         ],
       ),
