@@ -18,10 +18,12 @@ class MyHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Color higlightColor = Colors.pink[400];
     MusicModelFixtures fixture = new MusicModelFixtures();
     final Widget player = new Player(
       currentTrack: fixture.track(),
       playbackPosition: new Duration(seconds: 60),
+      highlightColor: higlightColor,
     );
     return new Scaffold(
       backgroundColor: Colors.grey[800],
@@ -31,10 +33,16 @@ class MyHomePage extends StatelessWidget {
       body: new Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          new PlaylistSurface(
-            playlist: fixture.playlist(),
+          new Expanded(
+            child: new PlaylistSurface(
+              playlist: fixture.playlist(),
+              highlightColor: higlightColor,
+            ),
           ),
-          player,
+          new Material(
+            elevation: 4,
+            child: player,
+          ),
         ],
       ),
     );

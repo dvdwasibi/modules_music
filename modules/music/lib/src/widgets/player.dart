@@ -33,6 +33,12 @@ class Player extends StatelessWidget {
   /// The playback position of the current tack
   final Duration playbackPosition;
 
+  /// [Color] used as the highlight.
+  /// This is used for important UI elements such as primary buttons.
+  ///
+  /// Defaults to the theme primary color
+  final Color highlightColor;
+
   /// True is the current song is being played, false if it is paused
   final bool isPlaying;
 
@@ -68,6 +74,7 @@ class Player extends StatelessWidget {
     Key key,
     @required this.currentTrack,
     @required this.playbackPosition,
+    this.highlightColor,
     this.isPlaying: false,
     this.isShuffled: false,
     this.isRepeated: false,
@@ -298,9 +305,9 @@ class Player extends StatelessWidget {
         child: new LayoutBuilder(
             builder: (BuildContext context, BoxConstraints constraints) {
           if (constraints.maxWidth <= _kSmallPlayerMaxWidth) {
-            return _buildSmallPlayer(theme.primaryColor);
+            return _buildSmallPlayer(highlightColor ?? theme.primaryColor);
           } else {
-            return _buildLargePlayer(theme.primaryColor);
+            return _buildLargePlayer(highlightColor ?? theme.primaryColor);
           }
         }),
       ),
