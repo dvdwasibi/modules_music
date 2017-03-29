@@ -8,6 +8,7 @@ import '../models.dart';
 import 'album_surface.dart';
 import 'artist_surface.dart';
 import 'player.dart';
+import 'preview_card.dart';
 
 enum _View {
   artist,
@@ -75,8 +76,19 @@ class _MyHomePageState extends State<MyHomePage> {
       body: new Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          new Expanded(
-            child: view,
+          // new Expanded(
+          //   child: new PreviewCard(
+          //     title: 'Native Sons',
+          //     subtitle: 'Nonch Harpin\'',
+          //     artworkUrl: 'https://img.buzzfeed.com/buzzfeed-static/static/2014-06/6/18/enhanced/webdr02/enhanced-944-1402094306-5.jpg',
+          //     onTap: () => print('hit'),
+          //   ),
+          // ),
+          new PreviewCard(
+            title: 'Native Sons',
+            subtitle: 'Nonch Harpin\'',
+            artworkUrl: 'https://img.buzzfeed.com/buzzfeed-static/static/2014-06/6/18/enhanced/webdr02/enhanced-944-1402094306-5.jpg',
+            onTap: () => print('hit'),
           ),
           new Material(
             elevation: 4,
