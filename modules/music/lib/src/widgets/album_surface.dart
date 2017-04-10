@@ -10,6 +10,7 @@ import '../typedefs.dart';
 import '../utils.dart';
 import 'follow_button.dart';
 import 'hero_banner_scaffold.dart';
+import 'loading_status.dart';
 import 'track_art.dart';
 import 'track_list_item.dart';
 
@@ -37,6 +38,9 @@ class AlbumSurface extends StatelessWidget {
   /// Callback for when a track is tapped
   final TrackActionCallback onTapTrack;
 
+  /// Current loading status of the album
+  final LoadingStatus loadingStatus;
+
   /// Constructor
   AlbumSurface({
     Key key,
@@ -46,6 +50,7 @@ class AlbumSurface extends StatelessWidget {
     this.isFollowing: false,
     this.currentTrack,
     this.onTapTrack,
+    this.loadingStatus,
   })
       : super(key: key) {
     assert(album != null);
@@ -152,6 +157,7 @@ class AlbumSurface extends StatelessWidget {
       heroBanner: _buildBannerContent(_highlightColor),
       heroImage: new TrackArt(artworkUrl: album.defaultArtworkUrl),
       body: _buildTrackList(_highlightColor),
+      loadingStatus: loadingStatus,
     );
   }
 }

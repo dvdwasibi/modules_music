@@ -5,6 +5,8 @@
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
+import 'loading_status.dart';
+
 /// This is the height that the Hero Banner should take up (not including the
 /// background overflow).
 const double _kHeroBannerHeight = 200.0;
@@ -55,11 +57,15 @@ class HeroBannerScaffold extends StatelessWidget {
   /// Child Widget (content) that goes inside the main body section
   final Widget body;
 
+  /// Loading Status of the content for this scaffold
+  final LoadingStatus loadingStatus;
+
   /// Constructor
   HeroBannerScaffold({
     Key key,
     this.heroBannerBackgroundColor,
     this.backgroundColor,
+    this.loadingStatus : LoadingStatus.completed,
     @required this.heroBanner,
     @required this.heroImage,
     @required this.body,
@@ -84,7 +90,7 @@ class HeroBannerScaffold extends StatelessWidget {
         ),
         padding: const EdgeInsets.only(left: _kHeroImageSize + 32.0),
         height: _kHeroBannerHeight - (_kHeroBannerVerticalPadding * 2),
-        child: heroBanner,
+        child: loadingStatus == LoadingStatus.completed ? heroBanner : null,
       ),
     );
   }
@@ -107,7 +113,9 @@ class HeroBannerScaffold extends StatelessWidget {
             child: new Container(
               width: _kHeroImageSize,
               height: _kHeroImageSize,
-              child: heroImage,
+              child: loadingStatus == LoadingStatus.completed
+                  ? heroImage
+                  : new Container(color: Colors.grey[300]),
             ),
           ),
         ),
@@ -116,6 +124,27 @@ class HeroBannerScaffold extends StatelessWidget {
   }
 
   Widget _buildBody() {
+    Widget child;
+    switch(loadingStatus) {
+      case LoadingStatus.inProgress:
+        child = new Center(
+          child: new CircularProgressIndicator(
+            value: null,
+            valueColor: new AlwaysStoppedAnimation<Color>(
+              heroBannerBackgroundColor,
+            ),
+          ),
+        );
+        break;
+      case LoadingStatus.failed:
+        child = new Center(
+          child: new Text('Content failed to load'),
+        );
+        break;
+      case LoadingStatus.completed:
+        child = body;
+        break;
+    }
     return new Container(
       margin: const EdgeInsets.only(
         top: _kHeroBannerHeight,
@@ -143,7 +172,7 @@ class HeroBannerScaffold extends StatelessWidget {
                   )),
                 ),
               ),
-              body,
+              child,
             ],
           ),
         ),
