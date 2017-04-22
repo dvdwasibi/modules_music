@@ -17,6 +17,10 @@ flutter_app("music_artist") {
     "//apps/maxwell/services/user:user_dart",
     "//apps/modular/services/module:module_dart",
     "//apps/modular/services/story:story_dart",
+    # for DEV ONLY
+    "//apps/modules/music/packages/concert_api",
+    "//apps/modules/music/packages/concert_models",
+    # END
     "//apps/modules/music/packages/music_api",
     "//apps/modules/music/packages/music_models",
     "//apps/modules/music/packages/music_widgets",
