@@ -1,4 +1,4 @@
-// Copyright 2017 The Fuchsia Authors. All rights reserved.
+// Copyright 2016 The Fuchsia Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,17 +7,13 @@ import 'dart:convert' show JSON;
 
 import 'package:concert_models/concert_models.dart';
 import 'package:http/http.dart' as http;
-import 'package:meta/meta.dart';
 
 const String _kApiBaseUrl = 'api.songkick.com';
 
 /// Client for Songkick APIs
 class Api {
   /// Searches for Songkick artists given a name
-  static Future<List<Artist>> searchArtist(
-    @required String name,
-    @required String apiKey,
-  ) async {
+  static Future<List<Artist>> searchArtist(String name, String apiKey) async {
     assert(name != null);
     assert(apiKey != null);
     Map<String, String> query = new Map<String, String>();
@@ -50,8 +46,8 @@ class Api {
   /// List upcoming Songkick events for the given artist name.
   /// Only nearby (based on client IP address) events will shown.
   static Future<List<Event>> searchEventsByArtist(
-    @required String name,
-    @required String apiKey,
+    String name,
+    String apiKey,
   ) async {
     assert(name != null);
     assert(apiKey != null);
