@@ -5,14 +5,13 @@
 import 'dart:async';
 import 'dart:convert' show JSON;
 
-import 'package:http/http.dart' as http;
 import 'package:concert_models/concert_models.dart';
+import 'package:http/http.dart' as http;
 
 const String _kApiBaseUrl = 'api.songkick.com';
 
 /// Client for Songkick APIs
 class Api {
-
   /// Searches for artists given a name
   static Future<List<Artist>> searchArtist(String name, String apiKey) async {
     Map<String, String> query = new Map<String, String>();
@@ -28,10 +27,17 @@ class Api {
       return null;
     }
     dynamic jsonData = JSON.decode(response.body);
-    List<Artist> artist = <Artist>[];
-    // if(jsonData['resultsPage'] is Map<String, dynamic &&
-    //     jsonData['resultsPage']['status'] == 'ok' &&
-    //     jsonData['resultsPage']['results'] ==
-    // )
+    List<Artist> artists = <Artist>[];
+    if (jsonData['resultsPage'] is Map<String, dynamic> &&
+        jsonData['resultsPage']['status'] == 'ok' &&
+        jsonData['resultsPage']['results'] is Map<String, dynamic> &&
+        jsonData['resultsPage']['results']['artist']
+            is List<Map<String, dynamic>>) {
+      jsonData['resultsPage']['results']['artist']
+          .forEach((Map<String, dynamic> artistJson) {
+        artists.add(new Artist.fromJson(artistJson));
+      });
+    }
+    return artists;
   }
 }
