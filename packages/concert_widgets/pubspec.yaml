@@ -2,16 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-name: music_widgets
-description: Flutter widgets used by the music module
+name: concert_widgets
+description: Flutter widgets used by the concert modules
 dependencies:
   flutter:
     sdk: flutter
-  lib.widgets:
-    path: ../../../../../lib/widgets/packages/widgets
-  music_models:
-    path: ../music_models
-  intl: ^0.14.0
+  concert_models:
+    path: ../concert_models
 dev_dependencies:
   test: any
   flutter_test:
