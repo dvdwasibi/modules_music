@@ -5,6 +5,7 @@
 import 'package:concert_models/concert_models.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
+import 'package:intl/intl.dart';
 
 final TextStyle _kMonthStyle = new TextStyle(
   fontWeight: FontWeight.w600,
@@ -33,17 +34,21 @@ class EventCard extends StatelessWidget {
     assert(event != null);
   }
 
-  Widget _buildInfoSection() {
+  String get _abbreviatedMonth => new DateFormat('MMM').format(event.startTime);
+
+  String get _readableStartTime => new DateFormat('hh:mm aaa').format(event.startTime);
+
+    Widget _buildInfoSection() {
     return new Container(
       margin: new EdgeInsets.all(16.0),
-      child: new Row( //Concert card text
+      child: new Row(
         children: <Widget>[
           new Expanded(
             flex: 1,
             child: new Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                new Text('${event.startTime.month}', style: _kMonthStyle),
+                new Text(_abbreviatedMonth, style: _kMonthStyle),
                 new Text('${event.startTime.day}', style: _kDayStyle),
               ],
             ),
@@ -61,8 +66,10 @@ class EventCard extends StatelessWidget {
                     height: 1.2,
                   ),
                 ),
-                new Text('${event.startTime}', style: _kLightStyle),
-                new Text('${event.venue.name}', style: _kLightStyle),
+                new Text(
+                  '$_readableStartTime - ${event.venue.name}',
+                  style: _kLightStyle,
+                ),
               ],
             ),
           ),
@@ -76,11 +83,57 @@ class EventCard extends StatelessWidget {
     );
   }
 
-  Widget _buildAddressSection() {
+  Widget _buildBillingSection() {
     return new Container(
       margin: new EdgeInsets.all(16.0),
       child: new Row(
-        // TODO
+        children: event.performances.map((Performance performance) {
+          return new Container(
+            margin: const EdgeInsets.only(right: 8.0),
+            child: new Column(
+              children: <Widget>[
+                new Image.network(
+                  performance.artist.imageUrl,
+                  height: 40.0,
+                  width: 40.0,
+                ),
+                new Container(
+                  margin: const EdgeInsets.only(top: 4.0),
+                  child: new Text(performance.artist.name),
+                ),
+              ],
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildVenueSection() {
+    return new Container(
+      margin: new EdgeInsets.all(16.0),
+      child: new Row(
+        children: <Widget>[
+          new Expanded(
+            child: new Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                new Text('VENUE'),
+                new Text('${event.venue.street}'),
+                new Text('${event.venue.city}, ${event.venue.city.country}'),
+                new Text('${event.venue.phoneNumber}'),
+              ],
+            ),
+          ),
+          new Expanded(
+            // TODO (dayang@) Compose Maps Module here instead
+            // https://fuchsia.atlassian.net/browse/SO-377
+            child: new Image.network(
+              event.venue.imageUrl,
+              fit: BoxFit.cover,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -91,9 +144,17 @@ class EventCard extends StatelessWidget {
       child: new Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
+          new Container(
+            height: 160.0,
+            child: new Image.network(
+              event.performances.first.artist.imageUrl,
+              fit: BoxFit.cover,
+            ),
+          ),
           _buildInfoSection(),
-          _buildAddressSection(),
-          // TODO (dayang@): Add in maps and address
+          new Divider(),
+          _buildBillingSection(),
+          _buildVenueSection(),
         ],
       ),
     );
