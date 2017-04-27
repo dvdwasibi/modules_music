@@ -4,8 +4,8 @@
 
 import("//flutter/build/flutter_app.gni")
 
-flutter_app("music_artist") {
-  package_name = "music_artist"
+flutter_app("concert_event") {
+  package_name = "concert_event"
 
   main_dart = "lib/main.dart"
 
@@ -13,18 +13,16 @@ flutter_app("music_artist") {
 
   deps = [
     "//application/lib/app/dart",
-    "//apps/maxwell/services/context:context_dart",
-    "//apps/maxwell/services/user:user_dart",
     "//apps/modular/services/module:module_dart",
     "//apps/modular/services/story:story_dart",
-    "//apps/modules/music/packages/music_api",
-    "//apps/modules/music/packages/music_models",
-    "//apps/modules/music/packages/music_widgets",
+    "//apps/modules/common/packages/config",
+    "//apps/modules/music/packages/concert_api",
+    "//apps/modules/music/packages/concert_models",
+    "//apps/modules/music/packages/concert_widgets",
     "//apps/mozart/services/views:views_dart",
     "//lib/fidl/dart",
     "//lib/flutter/packages/flutter",
     "//lib/widgets/packages/widgets:lib.widgets",
-    "//third_party/dart-pkg/pub/intl",
   ]
 
   analysis_options = "//apps/modules/common/.analysis_options"

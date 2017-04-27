@@ -6,6 +6,6 @@ group("modules") {
   deps = [
     "music_album",
     "music_artist",
-    # "concert_event",
+    "concert_event",
   ]
 }
