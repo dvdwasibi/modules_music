@@ -46,7 +46,7 @@ class MusicPlaybackAgent extends Agent {
     // Register the player service to the outgoingServices service provider
     _outgoingServicesImpl.addServiceForName(
       (InterfaceRequest<PlayerImpl> request) {
-        _log('Received a ChatContentProvider request');
+        _log('Received a Player request');
         _playerImpl.addBinding(request);
       },
       Player.serviceName,

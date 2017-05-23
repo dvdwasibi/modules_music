@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:application.lib.app.dart/app.dart';
 import 'package:apps.media.services/audio_renderer.fidl.dart';
 import 'package:apps.media.services/media_service.fidl.dart';
 import 'package:apps.media.services/media_renderer.fidl.dart';
@@ -33,7 +34,11 @@ class PlayerImpl extends Player {
 
   final NetMediaPlayerProxy _netMediaPlayer = new NetMediaPlayerProxy();
 
+  final ApplicationContext _appContext = new ApplicationContext.fromStartupInfo();
+
   PlayerImp() {
+    connectToService(_appContext.environmentServices, _mediaService.ctrl);
+    connectToService(_appContext.environmentServices, _netMediaService.ctrl);
     _createLocalPlayer();
   }
 
