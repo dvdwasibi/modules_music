@@ -2,6 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:apps.media.services/audio_renderer.fidl.dart';
+import 'package:apps.media.services/media_service.fidl.dart';
+import 'package:apps.media.services/media_renderer.fidl.dart';
+import 'package:apps.media.services/media_player.fidl.dart' as mp;
+import 'package:apps.media.services/net_media_player.fidl.dart';
+import 'package:apps.media.services/net_media_service.fidl.dart';
 import 'package:apps.modules.music.services.player/player.fidl.dart';
 import 'package:apps.modules.music.services.player/status.fidl.dart';
 import 'package:apps.modules.music.services.player/track.fidl.dart';
@@ -19,10 +25,24 @@ class PlayerImpl extends Player {
   // Keeps the list of bindings.
   final List<PlayerBinding> _bindings = <PlayerBinding>[];
 
+  final MediaServiceProxy _mediaService = new MediaServiceProxy();
+
+  final NetMediaServiceProxy _netMediaService = new NetMediaServiceProxy();
+
+  final AudioRendererProxy _audioRenderer = new AudioRendererProxy();
+
+  final NetMediaPlayerProxy _netMediaPlayer = new NetMediaPlayerProxy();
+
+  PlayerImp() {
+    _createLocalPlayer();
+  }
+
   @override
   void play(Track track) {
     // TODO (dayang@): Play the current track
     // Make a call to the media service
+    _netMediaPlayer.setUrl(track.playbackUrl);
+    _netMediaPlayer.play();
     _log('Play Track');
   }
 
@@ -80,5 +100,26 @@ class PlayerImpl extends Player {
     _bindings.forEach(
       (PlayerBinding binding) => binding.close(),
     );
+  }
+
+  void _createLocalPlayer() {
+    InterfacePair<MediaRenderer> audioMediaRenderer =
+      new InterfacePair<MediaRenderer>();
+    _mediaService.createAudioRenderer(
+      _audioRenderer.ctrl.request(),
+      audioMediaRenderer.passRequest(),
+    );
+
+    InterfacePair<mp.MediaPlayer> mediaPlayer =
+      new InterfacePair<mp.MediaPlayer>();
+    _mediaService.createPlayer(
+      null,
+      audioMediaRenderer.passHandle(),
+      null,
+      mediaPlayer.passRequest(),
+    );
+
+    _netMediaService.createNetMediaPlayer('media_player',
+      mediaPlayer.passHandle(), _netMediaPlayer.ctrl.request());
   }
 }
