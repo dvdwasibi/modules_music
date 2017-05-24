@@ -34,21 +34,34 @@ class PlayerImpl extends Player {
 
   final NetMediaPlayerProxy _netMediaPlayer = new NetMediaPlayerProxy();
 
-  final ApplicationContext _appContext = new ApplicationContext.fromStartupInfo();
+  bool _active = false;
 
-  PlayerImp() {
-    connectToService(_appContext.environmentServices, _mediaService.ctrl);
-    connectToService(_appContext.environmentServices, _netMediaService.ctrl);
-    _createLocalPlayer();
+  bool _isPlaying = false;
+
+  Track _currentTrack;
+
+  PlayerImpl(ApplicationContext context) {
+    connectToService(context.environmentServices, _mediaService.ctrl);
+    connectToService(context.environmentServices, _netMediaService.ctrl);
   }
 
   @override
   void play(Track track) {
     // TODO (dayang@): Play the current track
     // Make a call to the media service
-    _netMediaPlayer.setUrl(track.playbackUrl);
-    _netMediaPlayer.play();
-    _log('Play Track');
+    _currentTrack = track;
+    if(!_active) {
+      _createLocalPlayer();
+      _netMediaPlayer.getStatus(0, _handlePlayerStatusUpdates);
+      _active = true;
+    }
+
+    _netMediaPlayer.setUrl('http://www.kozco.com/tech/piano2.wav');
+
+    if(!_isPlaying) {
+      _netMediaPlayer.play();
+      _isPlaying = true;
+    }
   }
 
   @override
@@ -66,6 +79,7 @@ class PlayerImpl extends Player {
   @override
   void togglePlayPause() {
     // TODO (dayang@): Toggle the play / pause status
+    _netMediaPlayer.pause();
     _log('Toggle Play Pause');
   }
 
@@ -126,5 +140,13 @@ class PlayerImpl extends Player {
 
     _netMediaService.createNetMediaPlayer('media_player',
       mediaPlayer.passHandle(), _netMediaPlayer.ctrl.request());
+  }
+
+  void _handlePlayerStatusUpdates(int version, mp.MediaPlayerStatus status) {
+    _log('Audio connected: ${status.audioConnected}');
+    _log('Content has audio: ${status.contentHasAudio}');
+    _log('End of stream: ${status.endOfStream}');
+
+    _netMediaPlayer.getStatus(version, _handlePlayerStatusUpdates);
   }
 }
