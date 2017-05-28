@@ -9,5 +9,5 @@ import 'package:music_models/music_models.dart';
 import 'package:music_widgets/music_widgets.dart';
 
 void main() {
-  
+
 }

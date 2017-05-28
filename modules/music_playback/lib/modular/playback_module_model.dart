@@ -3,24 +3,20 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:application.lib.app.dart/app.dart';
 import 'package:application.services/service_provider.fidl.dart';
 import 'package:apps.modular.services.agent.agent_controller/agent_controller.fidl.dart';
 import 'package:apps.modular.services.component/component_context.fidl.dart';
 import 'package:apps.modular.services.module/module_context.fidl.dart';
-import 'package:apps.modular.services.module/module_controller.fidl.dart';
 import 'package:apps.modular.services.story/link.fidl.dart';
 import 'package:apps.modules.music.services.player/player.fidl.dart'
     as player_fidl;
-import 'package:apps.modules.music.services.player/track.fidl.dart'
-    as track_fidl;
-import 'package:lib.fidl.dart/bindings.dart';
+import 'package:apps.modules.music.services.player/status.fidl.dart';
 import 'package:lib.widgets/modular.dart';
-import 'package:music_api/api.dart';
 import 'package:music_models/music_models.dart';
-import 'package:music_widgets/music_widgets.dart';
+
+import 'player_status_listener.dart';
 
 const String _kPlayerUrl = 'file:///system/apps/music_playback_agent';
 
@@ -32,18 +28,31 @@ class PlaybackModuleModel extends ModuleModel {
 
   final player_fidl.PlayerProxy _player = new player_fidl.PlayerProxy();
 
+  PlayerStatusListenerImpl _statusListener;
+
   /// Current track being played
   Track _currentTrack;
 
   /// Playback position of current track.
   Duration _playbackPosition;
 
+  /// True if a track is current playing.
+  bool _isPlaying;
+
   Track get currentTrack => _currentTrack;
 
   Duration get playbackPosition => _playbackPosition;
 
+  bool get isPlaying => _isPlaying;
+
   /// Toggle play/pause for the current track
   void togglePlayPause() => _player.togglePlayPause();
+
+  /// Skip to the next track in the queue
+  void next() => _player.next();
+
+  /// Skip to previous track in queue
+  void previous() => _player.previous();
 
   @override
   void onReady(
@@ -66,6 +75,16 @@ class PlaybackModuleModel extends ModuleModel {
     );
     connectToService(playerServices, _player.ctrl);
 
+    // Attach listener to player status updates
+    _statusListener = new PlayerStatusListenerImpl(
+      onStatusUpdate: (PlayerStatus status) {
+        //TODO (dayang@) Serialize player track struct to widget track
+        _isPlaying = status.isPlaying;
+        notifyListeners();
+      },
+    );
+    _player.addPlayerListener(_statusListener.getHandle());
+
     // Close all the unnecessary bindings.
     playerServices.ctrl.close();
     componentContext.ctrl.close();
@@ -77,13 +96,4 @@ class PlaybackModuleModel extends ModuleModel {
     _playbackAgentController.ctrl.close();
     super.onStop();
   }
-
-  /// Update the artist ID
-  @override
-  Future<Null> onNotify(String json) async {
-    //@TODO(dayang)
-  }
-
-
-
 }
