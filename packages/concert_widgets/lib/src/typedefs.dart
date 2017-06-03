@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-export 'src/event_card.dart';
-export 'src/event_list.dart';
-export 'src/event_list_item.dart';
-export 'src/loading_status.dart';
+import 'package:concert_models/concert_models.dart';
+
+/// Callback function signature for an action on an event
+typedef void EventActionCallback(Event event);

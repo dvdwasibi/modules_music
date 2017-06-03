@@ -32,6 +32,8 @@ class MusicModelFixtures extends Fixtures {
         country: 'UK',
         id: 24426,
       ),
+      latitude: 51.4650846,
+      longitude: -0.1150322,
       street: '211 Stockwell Road',
       zip: 'SW9 9SL',
       phoneNumber: '020 7771 3000',
