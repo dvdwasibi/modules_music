@@ -5,18 +5,18 @@
 import 'dart:async';
 
 import 'package:application.lib.app.dart/app.dart';
-import 'package:concert_widgets/concert_widgets.dart';
 import 'package:config/config.dart';
 import 'package:flutter/material.dart';
 import 'package:lib.widgets/modular.dart';
 
-import 'modular/event_list_model.dart';
+import 'modular/weather_module_model.dart';
+import 'src/forecast_card.dart';
 
-/// Retrieves the Songkick API Key
+/// Retrieves the Weahter API Key
 Future<String> _readAPIKey() async {
   Config config = await Config.read('/system/data/modules/config.json');
-  config.validate(<String>['songkick_api_key']);
-  return config.get('songkick_api_key');
+  config.validate(<String>['weather_api_key']);
+  return config.get('weather_api_key');
 }
 
 Future<Null> main() async {
@@ -25,27 +25,25 @@ Future<Null> main() async {
   ApplicationContext applicationContext =
       new ApplicationContext.fromStartupInfo();
 
-  EventListModel eventListModel = new EventListModel(apiKey: apiKey);
+  WeatherModuleModel eventModuleModel = new WeatherModuleModel(apiKey: apiKey);
 
-  ModuleWidget<EventListModel> moduleWidget =
-      new ModuleWidget<EventListModel>(
+  ModuleWidget<WeatherModuleModel> moduleWidget =
+      new ModuleWidget<WeatherModuleModel>(
     applicationContext: applicationContext,
-    moduleModel: eventListModel,
+    moduleModel: eventModuleModel,
     child: new Scaffold(
       body: new SingleChildScrollView(
         controller: new ScrollController(),
-        child: new ScopedModelDescendant<EventListModel>(builder: (
+        child: new ScopedModelDescendant<WeatherModuleModel>(builder: (
           BuildContext context,
           Widget child,
-          EventListModel model,
+          WeatherModuleModel model,
         ) {
-          return new Material(
-            child: new EventList(
-              events: model.events,
-              selectedEvent: model.selectedEvent,
-              onSelect: model.selectEvent,
-            )
-          );
+          if(model.weather != null) {
+            return new ForecastCard(weather: model.weather);
+          } else {
+            return new Container();
+          }
         }),
       ),
     ),

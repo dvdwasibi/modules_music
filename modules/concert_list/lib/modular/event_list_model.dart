@@ -80,14 +80,14 @@ class EventListModel extends ModuleModel {
       _link.set(<String>[], _selectedEventJson);
       moduleContext.startModuleInShell(
         'event_module',
-        'file:///system/apps/concert_event',
+        'file:///system/apps/concert_event_page',
         'event_link',
         null, // outgoingServices,
         null, // incomingServices,
         new InterfacePair<ModuleController>().passRequest(),
         new SurfaceRelation()
             ..arrangement = SurfaceArrangement.copresent
-            ..emphasis = 0.7
+            ..emphasis = 1.7
             ..dependency = SurfaceDependency.dependent,
       );
     } else {

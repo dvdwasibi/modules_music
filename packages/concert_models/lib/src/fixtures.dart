@@ -48,6 +48,7 @@ class MusicModelFixtures extends Fixtures {
           'Vampire Weekend with Fan Death at O2 Academy Brixton (February 16, 2010)',
       type: 'Concert',
       startTime: DateTime.parse('2010-02-16T19:30:00+0000'),
+      date: DateTime.parse('2010-02-16'),
       venue: venue(),
       performances: <Performance>[
         new Performance(

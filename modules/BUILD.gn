@@ -5,11 +5,13 @@
 group("modules") {
   deps = [
     "concert_event",
+    "concert_event_page",
     "concert_list",
     "music_album",
     "music_album:music_album_component",
     "music_artist",
     "music_artist:music_artist_component",
     "music_playback",
+    "weather",
   ]
 }
