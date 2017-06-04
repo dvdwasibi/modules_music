@@ -43,15 +43,15 @@ Future<Null> main() async {
           List<Widget> embeds = <Widget>[];
           if(model.mapChildViewConn != null) {
             embeds.add(new Container(
-              height: 200.0,
-              width: 200.0,
+              height: 250.0,
+              width: 250.0,
               child: new ChildView(connection: model.mapChildViewConn),
             ));
           }
           if(model.weatherChildViewConn != null) {
             embeds.add(new Container(
-              height: 200.0,
-              width: 200.0,
+              height: 250.0,
+              width: 250.0,
               child: new ChildView(connection: model.weatherChildViewConn),
             ));
           }

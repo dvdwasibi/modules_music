@@ -76,13 +76,13 @@ class EventList extends StatelessWidget {
         );
         break;
       case LoadingStatus.completed:
-        list = new Column(
+        list = events != null ? new Column(
           children: events.map((Event event) => new EventListItem(
             event: event,
             onSelect: onSelect,
             isSelected: event == selectedEvent,
           )).toList(),
-        );
+        ) : new Container();
         break;
     }
     return list;

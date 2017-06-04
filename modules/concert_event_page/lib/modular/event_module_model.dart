@@ -74,8 +74,8 @@ class EventModuleModel extends ModuleModel {
     } catch (_) {
       _loadingStatus = LoadingStatus.failed;
     }
-    _startMapModule();
-    _startWeatherModule();
+    _updateMapModule();
+    _updateWeatherModule();
     notifyListeners();
   }
 
@@ -92,8 +92,8 @@ class EventModuleModel extends ModuleModel {
     if(event?.venue?.longitude != null && event?.venue?.latitude != null) {
       Map<String, dynamic> mapDoc = <String, dynamic>{
         _kMapZoomkey: 15,
-        _kMapHeightKey: 300.0,
-        _kMapWidthKey: 300.0,
+        _kMapHeightKey: 250.0,
+        _kMapWidthKey: 250.0,
         _kMapLocationKey: '${event.venue.latitude},${event.venue.longitude}',
       };
       return JSON.encode(mapDoc);
@@ -114,45 +114,53 @@ class EventModuleModel extends ModuleModel {
     }
   }
 
-  void _startMapModule() {
-    _mapLink = new LinkProxy();
-    moduleContext.getLink('map_link', _mapLink.ctrl.request());
-    _mapLink.set(<String>[_kMapDocRoot], _mapLinkData);
+  void _updateMapModule() {
+    if(_mapConn != null) {
+      _mapLink.set(<String>[_kMapDocRoot], _mapLinkData);
+    } else {
+      _mapLink = new LinkProxy();
+      moduleContext.getLink('map_link', _mapLink.ctrl.request());
+      _mapLink.set(<String>[_kMapDocRoot], _mapLinkData);
 
-    InterfacePair<ViewOwner> viewOwner = new InterfacePair<ViewOwner>();
-    InterfacePair<ModuleController> moduleController =
-        new InterfacePair<ModuleController>();
-    moduleContext.startModule(
-      'map',
-      _kMapModuleUrl,
-      'map_link',
-      null,
-      null,
-      moduleController.passRequest(),
-      viewOwner.passRequest(),
-    );
-    _mapConn = new ChildViewConnection(viewOwner.passHandle());
+      InterfacePair<ViewOwner> viewOwner = new InterfacePair<ViewOwner>();
+      InterfacePair<ModuleController> moduleController =
+          new InterfacePair<ModuleController>();
+      moduleContext.startModule(
+        'map',
+        _kMapModuleUrl,
+        'map_link',
+        null,
+        null,
+        moduleController.passRequest(),
+        viewOwner.passRequest(),
+      );
+      _mapConn = new ChildViewConnection(viewOwner.passHandle());
+    }
     notifyListeners();
   }
 
-  void _startWeatherModule() {
-    _weatherLink = new LinkProxy();
-    moduleContext.getLink('weather_link', _weatherLink.ctrl.request());
-    _weatherLink.set(<String>[], _weatherLinkData);
+  void _updateWeatherModule() {
+    if(_weatherConn != null) {
+      _weatherLink.set(<String>[], _weatherLinkData);
+    } else {
+      _weatherLink = new LinkProxy();
+      moduleContext.getLink('weather_link', _weatherLink.ctrl.request());
+      _weatherLink.set(<String>[], _weatherLinkData);
 
-    InterfacePair<ViewOwner> viewOwner = new InterfacePair<ViewOwner>();
-    InterfacePair<ModuleController> moduleController =
-        new InterfacePair<ModuleController>();
-    moduleContext.startModule(
-      'weather',
-      _kWeatherModuleUrl,
-      'weather_link',
-      null,
-      null,
-      moduleController.passRequest(),
-      viewOwner.passRequest(),
-    );
-    _weatherConn = new ChildViewConnection(viewOwner.passHandle());
+      InterfacePair<ViewOwner> viewOwner = new InterfacePair<ViewOwner>();
+      InterfacePair<ModuleController> moduleController =
+          new InterfacePair<ModuleController>();
+      moduleContext.startModule(
+        'weather',
+        _kWeatherModuleUrl,
+        'weather_link',
+        null,
+        null,
+        moduleController.passRequest(),
+        viewOwner.passRequest(),
+      );
+      _weatherConn = new ChildViewConnection(viewOwner.passHandle());
+    }
     notifyListeners();
   }
 }

@@ -5,16 +5,7 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:application.lib.app.dart/app.dart';
-import 'package:application.services/service_provider.fidl.dart';
-import 'package:apps.modular.services.module/module.fidl.dart';
-import 'package:apps.modular.services.module/module_context.fidl.dart';
-import 'package:apps.modular.services.module/module_controller.fidl.dart';
-import 'package:apps.modular.services.story/link.fidl.dart';
-import 'package:apps.mozart.lib.flutter/child_view.dart';
-import 'package:apps.mozart.services.views/view_token.fidl.dart';
 import 'package:lib.widgets/modular.dart';
-import 'package:lib.fidl.dart/bindings.dart';
 import 'package:meta/meta.dart';
 
 import '../src/api.dart';
@@ -45,12 +36,7 @@ class WeatherModuleModel extends ModuleModel {
         latitude: latitude,
         longitude: longitude,
       );
-      print('RETIREVED WEATHER');
-      print('$_weather');
-    } catch (exception, stackTrace) {
-      print('[weather] ERROR FECTHING WEATHER');
-      print(exception);
-      print(stackTrace);
+    } catch (_) {
       //TODO(dayang@) Handle error state
     }
     notifyListeners();

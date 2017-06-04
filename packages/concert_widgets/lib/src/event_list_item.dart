@@ -7,9 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';
 
+import 'fallback_image.dart';
 import 'typedefs.dart';
 
-const double _kHeight = 72.0;
+const double _kHeight = 96.0;
 
 /// UI Widget that represents a list item for an [Event]
 class EventListItem extends StatelessWidget {
@@ -20,14 +21,10 @@ class EventListItem extends StatelessWidget {
   /// Callback to fire when this event is selected
   final EventActionCallback onSelect;
 
-  static final DateFormat _dateFormat = new DateFormat('MMM D');
+  static final DateFormat _dateFormat = new DateFormat('MMM d');
 
   /// True if this [EventListItem] is selected
   final bool isSelected;
-
-  // static final DateFormat _monthFormat = new DateFormat('MMM');
-  //
-  // static final DateFormat _timeFormat = new DateFormat('h:mm aaa');
 
   /// Constructor
   EventListItem({
@@ -41,40 +38,67 @@ class EventListItem extends StatelessWidget {
     return event.performances.first?.artist?.imageUrl;
   }
 
-  String get _readableDate =>
-      event.startTime != null ? _dateFormat.format(event.startTime) : '';
+  String get _readableDate => event.date != null ? _dateFormat.format(event.date) : '';
+
+  String get _eventTitle => event.performances.first?.artist?.name ?? event.name ?? '';
 
   Widget _buildTextSection() {
-    return new Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        new Text(_readableDate),
-        new Text(event.name ?? ''),
-        new Text(event.venue?.name ?? ''),
-      ],
+    return new Container(
+      padding: const EdgeInsets.all(16.0),
+      child: new Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          new Container(
+            margin: const EdgeInsets.only(bottom: 4.0),
+            child: new Text(_readableDate),
+          ),
+          new Container(
+            margin: const EdgeInsets.only(bottom: 4.0),
+            child: new Text(
+              _eventTitle,
+              overflow: TextOverflow.ellipsis,
+              style: new TextStyle(
+                fontSize: 18.0,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          new Text(event.venue?.name ?? ''),
+        ],
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     // TODO(dayang@) make this responsive
-    return new InkWell(
-      onTap: () => onSelect?.call(event),
-      child: new Container(
-        child: new Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            new Image.network(
-              _eventImage,
-              fit: BoxFit.cover,
-              height: _kHeight,
-              width: _kHeight,
+    return new Material(
+      color: Colors.white,
+      child: new InkWell(
+        onTap: () => onSelect?.call(event),
+        child: new Container(
+          decoration: new BoxDecoration(
+            border: new Border(
+              bottom: new BorderSide(
+                color: Colors.pink[100],
+                width: 1.0,
+              ),
             ),
-            new Expanded(
-              child: _buildTextSection(),
-            ),
-          ],
+          ),
+          child: new Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              new FallbackImage(
+                artworkUrl: _eventImage,
+                height: _kHeight,
+                width: _kHeight,
+              ),
+              new Expanded(
+                child: _buildTextSection(),
+              ),
+            ],
+          ),
         ),
       ),
     );

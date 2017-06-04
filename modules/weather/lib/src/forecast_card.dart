@@ -27,8 +27,9 @@ class ForecastCard extends StatelessWidget {
       child: new Container(
         padding: const EdgeInsets.all(16.0),
         child: new Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            new Text('Daily Forecast'),
+            new Text('Weather Forecast'),
             new Container(
               margin: const EdgeInsets.only(top: 8.0),
               child: new Row(

@@ -32,6 +32,7 @@ Future<Null> main() async {
     applicationContext: applicationContext,
     moduleModel: eventModuleModel,
     child: new Scaffold(
+      backgroundColor: Colors.white,
       body: new SingleChildScrollView(
         controller: new ScrollController(),
         child: new ScopedModelDescendant<WeatherModuleModel>(builder: (
