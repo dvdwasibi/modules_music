@@ -10,6 +10,9 @@ dart_app("spotify_agent") {
 
   deps = [
     "//application/lib/app/dart",
+    "//apps/maxwell/lib/dart",
+    "//apps/maxwell/services/context:context_dart",
+    "//apps/maxwell/services/user:user_dart",
     "//apps/maxwell/services/context:context_dart",
     "//apps/maxwell/services/suggestion:suggestion_dart",
     "//apps/modules/common/packages/config",

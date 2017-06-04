@@ -7,6 +7,8 @@ import 'dart:convert';
 
 import 'package:application.lib.app.dart/app.dart';
 import 'package:application.services/service_provider.fidl.dart';
+import 'package:apps.maxwell.services.context/context_publisher.fidl.dart';
+import 'package:apps.maxwell.services.user/intelligence_services.fidl.dart';
 import 'package:apps.modular.services.module/module.fidl.dart';
 import 'package:apps.modular.services.module/module_context.fidl.dart';
 import 'package:apps.modular.services.module/module_controller.fidl.dart';
@@ -18,6 +20,12 @@ import 'package:concert_models/concert_models.dart';
 import 'package:concert_widgets/concert_widgets.dart';
 import 'package:lib.widgets/modular.dart';
 import 'package:lib.fidl.dart/bindings.dart';
+
+/// The context topic for "focal entities"
+const String _kFocalEntitiesTopic = 'focal_entities/artists';
+
+/// The Entity type for a music artist.
+const String _kMusicArtistType = 'http://types.fuchsia.io/music/artist';
 
 final String _kMapModuleUrl = 'file:///system/apps/map';
 final String _kMapDocRoot = 'map-doc';
@@ -76,6 +84,7 @@ class EventModuleModel extends ModuleModel {
     }
     _updateMapModule();
     _updateWeatherModule();
+    _publishContext();
     notifyListeners();
   }
 
@@ -162,5 +171,33 @@ class EventModuleModel extends ModuleModel {
       _weatherConn = new ChildViewConnection(viewOwner.passHandle());
     }
     notifyListeners();
+  }
+
+  void _publishContext() {
+    ContextPublisherProxy publisher = new ContextPublisherProxy();
+    IntelligenceServicesProxy intelligenceServices =
+        new IntelligenceServicesProxy();
+    moduleContext
+        .getIntelligenceServices(intelligenceServices.ctrl.request());
+    intelligenceServices.getContextPublisher(publisher.ctrl.request());
+
+    if(event != null) {
+      event.performances.forEach((Performance performance) {
+        if(performance.artist?.name != null ) {
+          publisher.publish(
+            _kFocalEntitiesTopic,
+            JSON.encode(
+              <String, String>{
+                '@type': _kMusicArtistType,
+                'name': performance.artist.name,
+              },
+            ),
+          );
+        }
+      });
+    }
+
+    publisher.ctrl.close();
+    intelligenceServices.ctrl.close();
   }
 }

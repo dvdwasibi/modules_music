@@ -6,6 +6,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:application.lib.app.dart/app.dart';
+import 'package:apps.maxwell.lib.dart/decomposition.dart';
 import 'package:apps.maxwell.services.context/context_provider.fidl.dart';
 import 'package:apps.maxwell.services.suggestion/proposal.fidl.dart';
 import 'package:apps.maxwell.services.suggestion/proposal_publisher.fidl.dart';
@@ -38,8 +39,20 @@ final ApplicationContext _context = new ApplicationContext.fromStartupInfo();
 class ContextListenerImpl extends ContextListener {
   final ContextListenerBinding _binding = new ContextListenerBinding();
 
+  Api _api;
+
   /// Constructor
-  ContextListenerImpl({@required this.apiKey});
+  ContextListenerImpl({
+    @required String clientId,
+    @required String clientSecret,
+  }) {
+    assert(clientId != null);
+    assert(clientSecret != null);
+    _api = new Api(
+      clientId: clientId,
+      clientSecret: clientSecret,
+    );
+  }
 
   /// Gets the [InterfaceHandle]
   ///
@@ -54,68 +67,71 @@ class ContextListenerImpl extends ContextListener {
 
     List<dynamic> data =
         JSON.decode(result.values[_kCurrentFocalEntitiesTopic]);
-    // for (var entity in data) {
-    //   if (!(entity is Map<String, dynamic>)) continue;
-    //   if (entity.containsKey('@type') && entity['@type'] == _kMusicArtistType) {
-    //     print('[concerts_agent] artist update: ${entity['name']}');
-    //     List<Event> events = await Api.searchEventsByArtist(
-    //       entity['name'],
-    //       apiKey,
-    //     );
-    //     if (events != null && events.length > 0) {
-    //       print('[concerts_agent] concerts found for: ${entity['name']}');
-    //       _createProposal(events, entity['name']);
-    //     } else {
-    //       print('[concerts_agent] no concerts found for: ${entity['name']}');
-    //     }
-    //   }
-    // }
+    for(dynamic entity in data) {
+      if (!(entity is Map<String, dynamic>)) continue;
+    }
+    for (var entity in data) {
+      if (!(entity is Map<String, dynamic>)) continue;
+      if (entity.containsKey('@type') && entity['@type'] == _kMusicArtistType) {
+        print('[spotify_agent] artist update: ${entity['name']}');
+        List<Artist> artists = await _api.searchArtists(
+          entity['name'],
+        );
+        if (artists != null && artists.length > 0) {
+          print('[spotify_agent] found artist for: ${entity['name']}');
+          _createProposal(artists.first);
+        } else {
+          print('[spotify_agent] no artist found for: ${entity['name']}');
+        }
+      }
+    }
   }
 
-  /// Creates a proposal given the artist and events
-  ///
-  /// We need to pass in the original artist name that was used to query for
-  /// upcoming coming concerts because songkick events can have more than one
-  /// artist.
-  ///
-  /// This only creates a proposal for the top ranked event based on the
-  /// search.
-  void _createProposal(List<Event> events, String artistName) {
-  //   String headline = 'Buy tickets for $artistName at ${events[0].venue.name}';
-  //
-  //   Proposal proposal = new Proposal()
-  //     ..id = 'Songkick Events'
-  //     ..display = (new SuggestionDisplay()
-  //       ..headline = headline
-  //       ..subheadline = 'powered by Songkick'
-  //       ..details = ''
-  //       ..color = 0xFFFF0080
-  //       ..iconUrls = const <String>[]
-  //       ..imageType = SuggestionImageType.other
-  //       ..imageUrl = events[0].venue.imageUrl)
-  //     ..onSelected = <Action>[
-  //       new Action()
-  //         ..createStory = (new CreateStory()
-  //           // TODO (dayang@): Update once the Concert module is implemented
-  //           // https://fuchsia.atlassian.net/browse/SO-376
-  //           ..moduleId = 'file:///system/apps/concert_event'
-  //           ..initialData = JSON.encode(
-  //             <String, dynamic>{'songkick:eventId': events[0].id},
-  //           ))
-  //     ];
-  //
-  //   print('[concerts_agent] proposing concert suggestion');
-  //   _proposalPublisher.propose(proposal);
-  //   _proposalPublisher.ctrl.close();
-  // }
+  /// Creates a proposal for the given Spotify artist
+  void _createProposal(Artist artist) {
+    String headline = 'Listen to ${artist.name}';
+
+    final Uri arg = new Uri(
+      scheme: 'spotify',
+      host: 'artist',
+      pathSegments: <String>[artist.id],
+    );
+
+    Proposal proposal = new Proposal()
+      ..id = 'Spotify Artist: ${artist.id}'
+      ..display = (new SuggestionDisplay()
+        ..headline = headline
+        ..subheadline = 'powered by Spotify'
+        ..details = ''
+        ..color = 0xFFFF0080
+        ..iconUrls = const <String>[]
+        ..imageType = SuggestionImageType.other
+        ..imageUrl = artist.defaultArtworkUrl)
+      ..onSelected = <Action>[
+        new Action()
+          ..createStory = (new CreateStory()
+            ..moduleId = 'file:///system/apps/music_artist'
+            ..initialData = JSON.encode(<String, dynamic>{'view': decomposeUri(arg)}))
+      ];
+
+    print('[spotify_agent] proposing artist suggestion');
+    _proposalPublisher.propose(proposal);
+    _proposalPublisher.ctrl.close();
+  }
 }
 
 
 Future<Null> main(List<dynamic> args) async {
+  Config config = await Config.read('/system/data/modules/config.json');
+  config.validate(<String>['spotify_client_id', 'spotify_client_secret']);
+
   connectToService(_context.environmentServices, _contextProvider.ctrl);
   connectToService(_context.environmentServices, _proposalPublisher.ctrl);
   ContextQuery query =
       new ContextQuery.init(<String>[_kCurrentFocalEntitiesTopic]);
-  _contextListenerImpl = new ContextListenerImpl(apiKey: apiKey);
+  _contextListenerImpl = new ContextListenerImpl(
+    clientId: config.get('spotify_client_id'),
+    clientSecret: config.get('spotify_client_secret'),
+  );
   _contextProvider.subscribe(query, _contextListenerImpl.getHandle());
 }
