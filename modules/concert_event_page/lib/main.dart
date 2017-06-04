@@ -50,9 +50,16 @@ Future<Null> main() async {
           }
           if(model.weatherChildViewConn != null) {
             embeds.add(new Container(
-              height: 250.0,
+              height: 100.0,
               width: 250.0,
               child: new ChildView(connection: model.weatherChildViewConn),
+            ));
+          }
+          if(model.travelChildViewConn != null) {
+            embeds.add(new Container(
+              height: 90.0,
+              width: 250.0,
+              child: new ChildView(connection: model.travelChildViewConn),
             ));
           }
           return new Material(

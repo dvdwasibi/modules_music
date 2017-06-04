@@ -50,6 +50,13 @@ class Album {
 
   /// Create album model from json data
   factory Album.fromJson(dynamic json) {
+    //HACK (dayang@)
+    DateTime releaseDate;
+    if(json['release_date'] != null) {
+      try {
+        releaseDate = DateTime.parse(json['release_date']);
+      } catch(_) {}
+    }
     return new Album(
       name: json['name'],
       artists: json['artists'] is List<dynamic>
@@ -63,9 +70,7 @@ class Album {
               .map((dynamic trackJson) => new Track.fromJson(trackJson))
               .toList()
           : <Track>[],
-      releaseDate: json['release_date'] != null
-          ? DateTime.parse(json['release_date'])
-          : null,
+      releaseDate: releaseDate,
       albumType: json['album_type'],
       genres: json['genres'] is List<String> ? json['genres'] : null,
       id: json['id'],

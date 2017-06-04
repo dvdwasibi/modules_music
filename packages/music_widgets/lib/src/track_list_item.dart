@@ -64,6 +64,15 @@ class TrackListItem extends StatelessWidget {
           style: _getTextStyle(_highlightColor),
         ),
       ),
+      track.playbackUrl != null ?  new Container() : new Container(
+        child: new Text(
+          'no sample',
+          style: new TextStyle(
+            color: Colors.grey[400],
+            fontSize: 12.0,
+          ),
+        ),
+      ),
       new Container(
         width: 100.0,
         alignment: FractionalOffset.centerRight,

@@ -74,7 +74,7 @@ class EventListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     // TODO(dayang@) make this responsive
     return new Material(
-      color: Colors.white,
+      color: isSelected ? Colors.pink[200] : Colors.white,
       child: new InkWell(
         onTap: () => onSelect?.call(event),
         child: new Container(

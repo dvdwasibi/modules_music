@@ -84,13 +84,17 @@ class ArtistModuleModel extends ModuleModel {
       ]);
       artist = response[0];
       albums = response[1];
+      print('[artist] artist: ${artist}');
+      print('[artist] albums: ${albums}');
       relatedArtists = response[2];
       if (artist != null && albums != null) {
         _loadingStatus = LoadingStatus.completed;
       } else {
         _loadingStatus = LoadingStatus.failed;
       }
-    } catch (_) {
+    } catch (error, stackTrace) {
+      print(error);
+      print(stackTrace);
       _loadingStatus = LoadingStatus.failed;
     }
     notifyListeners();
@@ -134,8 +138,6 @@ class ArtistModuleModel extends ModuleModel {
   Future<Null> onNotify(String json) async {
     final dynamic doc = JSON.decode(json);
     String artistId;
-    print(doc);
-    print(json);
     try {
       final dynamic uri = doc['view'];
       if (uri['scheme'] == 'spotify' && uri['host'] == 'artist') {
@@ -145,7 +147,9 @@ class ArtistModuleModel extends ModuleModel {
       } else {
         return;
       }
-    } catch (_) {
+    } catch (error, stackStrace) {
+      print(error);
+      print(stackStrace);
       return;
     }
 

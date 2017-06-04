@@ -65,7 +65,6 @@ class ContextListenerImpl extends ContextListener {
       return;
     }
 
-    print('a context update!!');
     List<dynamic> data =
         JSON.decode(result.values[_kCurrentFocalEntitiesTopic]);
     for (var entity in data) {
@@ -83,9 +82,8 @@ class ContextListenerImpl extends ContextListener {
             print('[spotify_agent] no artist found for: ${entity['name']}');
           }
         }
-      } catch(error, stackTrace) {
-        print(error);
-        print(stackTrace);
+      } catch(_) {
+
       }
     }
   }
@@ -99,9 +97,6 @@ class ContextListenerImpl extends ContextListener {
       host: 'artist',
       pathSegments: <String>[artist.id],
     );
-
-    print(arg.toString());
-
 
     Proposal proposal = new Proposal()
       ..id = 'Spotify Artist: ${artist.id}'

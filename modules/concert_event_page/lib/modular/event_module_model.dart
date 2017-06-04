@@ -35,6 +35,8 @@ final String _kMapWidthKey = 'map-width-key';
 final String _kMapZoomkey = 'map-zoom-key';
 final String _kWeatherModuleUrl = 'file:///system/apps/weather';
 
+final String _kTravelModuleUrl = 'file:///system/apps/travel_time';
+
 /// [ModuleModel] that manages the state of the Event Module.
 class EventModuleModel extends ModuleModel {
   /// The event for this given module
@@ -46,11 +48,17 @@ class EventModuleModel extends ModuleModel {
   /// Child View Connection for Weather
   ChildViewConnection _weatherConn;
 
+  /// Child View Connection for Travel
+  ChildViewConnection _travelConn;
+
   /// Link for Embedded Map Module
   LinkProxy _mapLink;
 
   /// Link for Embedded Weather Module
   LinkProxy _weatherLink;
+
+  /// Link for Travel Module
+  LinkProxy _travelLink;
 
   /// API key for Songkick APIs
   final String apiKey;
@@ -70,6 +78,8 @@ class EventModuleModel extends ModuleModel {
 
   ChildViewConnection get weatherChildViewConn => _weatherConn;
 
+  ChildViewConnection get travelChildViewConn => _travelConn;
+
   /// Retrieves the full event based on the given ID
   Future<Null> fetchEvent(int eventId) async {
     try {
@@ -84,6 +94,7 @@ class EventModuleModel extends ModuleModel {
     }
     _updateMapModule();
     _updateWeatherModule();
+    _updateTravelModule();
     _publishContext();
     notifyListeners();
   }
@@ -173,6 +184,31 @@ class EventModuleModel extends ModuleModel {
     notifyListeners();
   }
 
+  void _updateTravelModule() {
+    if(_travelConn != null) {
+      _travelLink.set(<String>[], _weatherLinkData);
+    } else {
+      _travelLink = new LinkProxy();
+      moduleContext.getLink('travel_link', _travelLink.ctrl.request());
+      _travelLink.set(<String>[], _weatherLinkData);
+
+      InterfacePair<ViewOwner> viewOwner = new InterfacePair<ViewOwner>();
+      InterfacePair<ModuleController> moduleController =
+          new InterfacePair<ModuleController>();
+      moduleContext.startModule(
+        'travel',
+        _kTravelModuleUrl,
+        'travel_link',
+        null,
+        null,
+        moduleController.passRequest(),
+        viewOwner.passRequest(),
+      );
+      _travelConn = new ChildViewConnection(viewOwner.passHandle());
+    }
+    notifyListeners();
+  }
+
   void _publishContext() {
     ContextPublisherProxy publisher = new ContextPublisherProxy();
     IntelligenceServicesProxy intelligenceServices =
@@ -182,19 +218,34 @@ class EventModuleModel extends ModuleModel {
     intelligenceServices.getContextPublisher(publisher.ctrl.request());
 
     if(event != null) {
-      event.performances.forEach((Performance performance) {
-        if(performance.artist?.name != null ) {
-          publisher.publish(
-            _kFocalEntitiesTopic,
-            JSON.encode(
-              <String, String>{
-                '@type': _kMusicArtistType,
-                'name': performance.artist.name,
-              },
-            ),
-          );
-        }
-      });
+
+      // Can't have more than one proposal for the same module
+
+      // event.performances.forEach((Performance performance) {
+      //   if(performance.artist?.name != null ) {
+      //     publisher.publish(
+      //       _kFocalEntitiesTopic,
+      //       JSON.encode(
+      //         <String, String>{
+      //           '@type': _kMusicArtistType,
+      //           'name': performance.artist.name,
+      //         },
+      //       ),
+      //     );
+      //   }
+      // });
+
+      if(event.performances.first?.artist?.name != null) {
+        publisher.publish(
+          _kFocalEntitiesTopic,
+          JSON.encode(
+            <String, String>{
+              '@type': _kMusicArtistType,
+              'name': event.performances.first.artist.name,
+            },
+          ),
+        );
+      }
     }
 
     publisher.ctrl.close();
