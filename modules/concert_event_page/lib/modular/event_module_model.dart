@@ -22,7 +22,7 @@ import 'package:lib.widgets/modular.dart';
 import 'package:lib.fidl.dart/bindings.dart';
 
 /// The context topic for "focal entities"
-const String _kFocalEntitiesTopic = 'focal_entities/artists';
+const String _kFocalEntitiesTopic = 'focal_entities';
 
 /// The Entity type for a music artist.
 const String _kMusicArtistType = 'http://types.fuchsia.io/music/artist';

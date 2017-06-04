@@ -134,7 +134,8 @@ class ArtistModuleModel extends ModuleModel {
   Future<Null> onNotify(String json) async {
     final dynamic doc = JSON.decode(json);
     String artistId;
-
+    print(doc);
+    print(json);
     try {
       final dynamic uri = doc['view'];
       if (uri['scheme'] == 'spotify' && uri['host'] == 'artist') {

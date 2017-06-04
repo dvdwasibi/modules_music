@@ -174,14 +174,16 @@ class Api {
     query['type'] = 'artist';
     query['q'] = name;
     Uri uri = new Uri.https(_kApiBaseUrl, '/v1/search', query);
+    print(uri.toString());
     http.Response response = await http.get(uri, headers: authHeader);
     if (response.statusCode != 200) {
+      print(response.statusCode);
       return null;
     }
     dynamic jsonData = JSON.decode(response.body);
     List<Artist> artists = <Artist>[];
-    if (jsonData['artists'] is List<dynamic>) {
-      jsonData['artists'].forEach((dynamic artistJson) {
+    if (jsonData['artists']['items'] is List<dynamic>) {
+      jsonData['artists']['items'].forEach((dynamic artistJson) {
         artists.add(new Artist.fromJson(artistJson));
       });
     }

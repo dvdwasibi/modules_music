@@ -23,7 +23,7 @@ import 'package:meta/meta.dart';
 
 /// The context topic for "focal entities" for the current story.
 const String _kCurrentFocalEntitiesTopic =
-    '/story/focused/explicit/focal_entities/artists';
+    '/story/focused/explicit/focal_entities';
 
 /// The Entity type for a music artist.
 const String _kMusicArtistType = 'http://types.fuchsia.io/music/artist';
@@ -65,24 +65,27 @@ class ContextListenerImpl extends ContextListener {
       return;
     }
 
+    print('a context update!!');
     List<dynamic> data =
         JSON.decode(result.values[_kCurrentFocalEntitiesTopic]);
-    for(dynamic entity in data) {
-      if (!(entity is Map<String, dynamic>)) continue;
-    }
     for (var entity in data) {
-      if (!(entity is Map<String, dynamic>)) continue;
-      if (entity.containsKey('@type') && entity['@type'] == _kMusicArtistType) {
-        print('[spotify_agent] artist update: ${entity['name']}');
-        List<Artist> artists = await _api.searchArtists(
-          entity['name'],
-        );
-        if (artists != null && artists.length > 0) {
-          print('[spotify_agent] found artist for: ${entity['name']}');
-          _createProposal(artists.first);
-        } else {
-          print('[spotify_agent] no artist found for: ${entity['name']}');
+      try {
+        if (!(entity is Map<String, dynamic>)) continue;
+        if (entity.containsKey('@type') && entity['@type'] == _kMusicArtistType) {
+          print('[spotify_agent] artist update: ${entity['name']}');
+          List<Artist> artists = await _api.searchArtists(
+            entity['name'],
+          );
+          if (artists != null && artists.length > 0) {
+            print('[spotify_agent] found artist for: ${entity['name']}');
+            _createProposal(artists.first);
+          } else {
+            print('[spotify_agent] no artist found for: ${entity['name']}');
+          }
         }
+      } catch(error, stackTrace) {
+        print(error);
+        print(stackTrace);
       }
     }
   }
@@ -96,6 +99,9 @@ class ContextListenerImpl extends ContextListener {
       host: 'artist',
       pathSegments: <String>[artist.id],
     );
+
+    print(arg.toString());
+
 
     Proposal proposal = new Proposal()
       ..id = 'Spotify Artist: ${artist.id}'
