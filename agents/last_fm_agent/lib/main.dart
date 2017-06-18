@@ -12,11 +12,11 @@ import 'package:apps.maxwell.services.suggestion/proposal.fidl.dart';
 import 'package:apps.maxwell.services.suggestion/proposal_publisher.fidl.dart';
 import 'package:apps.maxwell.services.suggestion/suggestion_display.fidl.dart';
 import 'package:config/config.dart';
+import 'package:last_fm_api/api.dart';
+import 'package:last_fm_models/last_fm_models.dart';
 import 'package:lib.fidl.dart/bindings.dart';
 import 'package:lib.logging/logging.dart';
 import 'package:meta/meta.dart';
-import 'package:last_fm_api/api.dart';
-import 'package:last_fm_models/last_fm_models.dart';
 
 /// The Music Artist Agent subscribes to the 'focal_entities' topic and will
 /// propose Music Artist suggestions if any of those Entities is an artist that
@@ -72,7 +72,7 @@ class ContextListenerImpl extends ContextListener {
             entity['@type'] == _kMusicArtistType) {
           log.fine('artist update: ${entity['name']}');
           Artist artist = await _api.getArtist(entity['name']);
-          if(artist != null) {
+          if (artist != null) {
             log.fine('found artist for: ${entity['name']}');
             _createProposal(artist);
           } else {
@@ -85,7 +85,6 @@ class ContextListenerImpl extends ContextListener {
 
   /// Creates a proposal for the given Last FM artist
   void _createProposal(Artist artist) {
-
     // String headline = 'Listen to ${artist.name}';
     //
     // final Uri arg = new Uri(

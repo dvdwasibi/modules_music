@@ -13,7 +13,6 @@ const String _kApiBaseUrl = 'ws.audioscrobbler.com';
 
 /// Client for Last FM APIs
 class LastFmApi {
-
   /// Last.FM API key
   final String apiKey;
 
