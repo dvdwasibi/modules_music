@@ -13,16 +13,21 @@ const String _kApiBaseUrl = 'ws.audioscrobbler.com';
 
 /// Client for Last FM APIs
 class LastFmApi {
-  /// Retrieves an artist given the Music Brainz ID (mbid)
-  Future<Artist> getArtist(
-    @required String mbid,
-    @required String apiKey,
-  ) async {
-    assert(mbid != null);
+
+  /// Last.FM API key
+  final String apiKey;
+
+  /// Constructor
+  LastFmApi({@required this.apiKey}) {
     assert(apiKey != null);
-    Map<String, String> query = {};
+  }
+
+  /// Retrieves an artist given the name
+  Future<Artist> getArtist(@required String name) async {
+    assert(name != null);
+    Map<String, String> query = <String, String>{};
     query['method'] = 'artist.getinfo';
-    query['mbid'] = mbid;
+    query['name'] = name;
     query['api_key'] = apiKey;
     query['format'] = 'json';
 
