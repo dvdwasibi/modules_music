@@ -4,6 +4,7 @@
 
 import 'package:concert_models/concert_models.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';
 
@@ -78,16 +79,53 @@ class EventList extends StatelessWidget {
       ),
     ];
 
-    children.addAll(events
-        .map((Event event) => new EventListItem(
-              event: event,
-              onSelect: onSelect,
-              isSelected: event == selectedEvent,
-            ))
-        .toList());
+    children.add(new Expanded(
+      child: new GridView.extent(
+        maxCrossAxisExtent: 300.0,
+        childAspectRatio: 3.0,
+        children: events
+          .map((Event event) => new EventListItem(
+                event: event,
+                onSelect: onSelect,
+                isSelected: event == selectedEvent,
+              ))
+          .toList(),
+        ),
+    ));
+      
+    // children.addAll(events
+    //     .map((Event event) => new EventListItem(
+    //           event: event,
+    //           onSelect: onSelect,
+    //           isSelected: event == selectedEvent,
+    //         ))
+    //     .toList());
 
     return new Column(
       children: children,
     );
+  }
+}
+
+
+const _kEventGridMinWidth = 240.0;
+const _kEventGridHeight = 200.0;
+const _kEventListHeight = 96.0;
+
+/// Grid delegate for Event Grid
+class EventListSliverGridDelegate extends SliverGridDelegate {
+
+
+
+  @override
+  SliverGridLayout getLayout(SliverConstraints constraints) {
+    // TODO(dayang)
+    return null;
+  }
+
+  @override
+  bool shouldRelayout(EventListSliverGridDelegate oldDelegate) {
+    // TODO(dauang)
+    return false;
   }
 }
